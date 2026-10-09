@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, Copy, Minus, Plus, Trash2 } from "lucide-react";
+import { Check, Copy, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,9 +81,13 @@ export function CartPanel() {
   }
 
   return (
-    <div className="rounded-[28px] bg-card p-4 shadow-foam sm:p-5">
+    <div className="overflow-hidden rounded-[28px] bg-card shadow-foam">
+      <div className="border-b border-border/60 bg-blush px-4 py-4 sm:px-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-display text-xl font-semibold">Tu carrito</h2>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-fucsia">Paso final</p>
+          <h2 className="mt-1 font-display text-xl font-semibold">Tu pedido</h2>
+        </div>
         <div className="flex rounded-full bg-blush p-1 shadow-foam">
           {(["NIO", "USD"] as const).map((code) => (
             <button
@@ -100,13 +104,19 @@ export function CartPanel() {
           ))}
         </div>
       </div>
+      <p className="mt-2 text-sm leading-relaxed text-muted">Revisa las piezas y envíanos el resumen por WhatsApp.</p>
+      </div>
 
       {cart.items.length === 0 ? (
-        <p className="mt-4 text-sm text-muted">
-          Todavía no hay piezas. Agrega varias: cada una conserva su detalle, cantidad y notas.
-        </p>
+        <div className="px-4 py-8 text-center sm:px-5">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-blush text-fucsia shadow-foam">
+            <ShoppingBag className="size-6" />
+          </div>
+          <p className="mt-4 font-display text-lg font-semibold">Tu pedido está esperando una idea</p>
+          <p className="mx-auto mt-1 max-w-xs text-sm leading-relaxed text-muted">Agrega piezas y cada una conservará su detalle, cantidad y notas.</p>
+        </div>
       ) : (
-        <ul className="mt-4 space-y-3">
+        <ul className="space-y-3 px-4 pt-4 sm:px-5">
           {cart.items.map((item) => (
             <li key={item.id} className="rounded-2xl bg-blush p-3">
               <div className="flex gap-3">
@@ -199,7 +209,7 @@ export function CartPanel() {
         </ul>
       )}
 
-      <div className="mt-5 space-y-4">
+      <div className="space-y-4 px-4 pt-5 sm:px-5">
         <div>
           <Label htmlFor="cliente">Nombre</Label>
           <Input
@@ -224,13 +234,17 @@ export function CartPanel() {
         </div>
       </div>
 
-      <p className="mt-5 font-display text-3xl font-semibold tabular-nums text-fucsia">{totalLabel}</p>
-      {altLabel ? <p className="text-sm text-muted">{altLabel}</p> : null}
-      <p className="mt-2 text-xs leading-relaxed text-muted">
-        Suma de todas las piezas, con volumen y express si aplican. El total se confirma por WhatsApp.
-      </p>
+      <div className="mx-4 mt-5 rounded-[24px] bg-ink p-4 text-white shadow-foam sm:mx-5">
+        <div className="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+          <span>Estimado total</span>
+          <span className="rounded-full bg-white/10 px-2 py-1">{currency}</span>
+        </div>
+        <p className="mt-2 font-display text-4xl font-semibold tabular-nums text-white">{totalLabel}</p>
+        {altLabel ? <p className="text-sm text-white/60">Aprox. {altLabel}</p> : null}
+        <p className="mt-2 text-xs leading-relaxed text-white/70">Incluye volumen y express si aplican. El taller confirma precio y disponibilidad.</p>
+      </div>
 
-      <div className="mt-5 flex flex-col gap-2">
+      <div className="flex flex-col gap-2 px-4 pb-5 pt-4 sm:px-5">
         <Button type="button" variant="whatsapp" size="lg" onClick={sendWhatsApp}>
           <WhatsAppIcon className="size-5" />
           Enviar pedido por WhatsApp

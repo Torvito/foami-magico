@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Minus, Plus, ShoppingBag } from "lucide-react";
+import { Check, Minus, Plus, ShoppingBag, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { CartPanel } from "@/components/cart-panel";
 import { Button } from "@/components/ui/button";
@@ -64,11 +64,38 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+    <div>
+      <div className="mb-6 rounded-[28px] bg-ink p-4 text-white shadow-foam sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-amarillo">Cotizador del taller</p>
+            <h1 className="mt-1 text-2xl font-semibold text-white sm:text-3xl">Arma tu pedido a tu medida</h1>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-semibold text-white/80">
+            <Sparkles className="size-4 text-amarillo" /> Estimado en menos de 1 minuto
+          </div>
+        </div>
+        <div className="mt-5 grid gap-2 sm:grid-cols-3">
+          {["Elige la pieza", "Ajusta detalle y cantidad", "Revisa y envía"].map((label, index) => (
+            <div key={label} className="flex items-center gap-2 rounded-2xl bg-white/5 px-3 py-2 text-sm font-semibold text-white/75">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-amarillo font-display text-sm text-ink">{index + 1}</span>
+              {label}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
       <div className="space-y-6">
         <section className="rounded-[28px] bg-card p-4 shadow-foam sm:p-5">
-          <h2 className="font-display text-xl font-semibold">1. Elige la pieza</h2>
-          <p className="mt-1 text-sm text-muted">Toca una tarjeta. Puedes cambiarla cuando quieras.</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-fucsia">Paso 1</p>
+              <h2 className="mt-1 font-display text-xl font-semibold">Elige la pieza</h2>
+              <p className="mt-1 text-sm text-muted">Toca una tarjeta. Puedes cambiarla cuando quieras.</p>
+            </div>
+            {product ? <Check className="mt-1 size-5 text-lima" /> : null}
+          </div>
           <div className="mt-4 space-y-5">
             {CATEGORIES.map((cat) => {
               const items = PRODUCTS.filter((item) => item.category === cat.id);
@@ -85,11 +112,14 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
                           onClick={() => selectProduct(item.slug)}
                           aria-pressed={selected}
                           className={cn(
-                            "overflow-hidden rounded-[20px] bg-blush text-left shadow-foam transition-[transform,box-shadow] duration-150 active:scale-[0.96]",
+                            "group overflow-hidden rounded-[20px] bg-blush text-left shadow-foam transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-foam-hover active:scale-[0.96]",
                             selected && "ring-2 ring-fucsia ring-offset-2 ring-offset-card",
                           )}
                         >
-                          <img src={item.image} alt="" className="aspect-square w-full object-cover" />
+                          <div className="relative overflow-hidden">
+                            <img src={item.image} alt="" className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
+                            {selected ? <span className="absolute right-2 top-2 rounded-full bg-fucsia p-1 text-white"><Check className="size-3" /></span> : null}
+                          </div>
                           <span className="block px-2.5 py-2 text-xs font-semibold leading-tight text-ink">
                             {item.name}
                           </span>
@@ -104,7 +134,8 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
         </section>
 
         <section className="rounded-[28px] bg-card p-4 shadow-foam sm:p-5">
-          <h2 className="font-display text-xl font-semibold">2. Detalle y cantidad</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-fucsia">Paso 2</p>
+          <h2 className="mt-1 font-display text-xl font-semibold">Detalle y cantidad</h2>
           <div className="mt-4 grid gap-2">
             {DETAIL_LEVELS.map((level) => (
               <button
@@ -154,7 +185,8 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
         </section>
 
         <section className="rounded-[28px] bg-card p-4 shadow-foam sm:p-5">
-          <h2 className="font-display text-xl font-semibold">3. Notas de esta pieza</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-fucsia">Paso 3</p>
+          <h2 className="mt-1 font-display text-xl font-semibold">Notas de esta pieza</h2>
           <div className="mt-4">
             <Label htmlFor="notas">Personaje o notas</Label>
             <Textarea
@@ -183,6 +215,7 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
       <aside className="h-fit lg:sticky lg:top-24">
         <CartPanel />
       </aside>
+    </div>
     </div>
   );
 }
