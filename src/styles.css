@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fucsia: #ff007f;
+  --color-fucsia-dark: #c40062;
+  --color-amarillo: #ffd000;
+  --color-lima: #00d053;
+  --color-cielo: #00b5ff;
+  --color-naranja: #ff6a00;
+  --color-blush: #fff0f6;
+  --color-blush-deep: #ffd6e8;
+  --color-ink: #3a1430;
+  --color-muted: #8d5678;
+  --color-card: #ffffff;
+  --color-whatsapp: #12a150;
+  --color-background: #fff0f6;
+  --color-foreground: #3a1430;
+  --color-border: #f3b6d0;
+  --color-ring: #ff007f;
+
+  --font-sans: "Nunito", ui-rounded, system-ui, sans-serif;
+  --font-display: "Fredoka", "Nunito", ui-rounded, system-ui, sans-serif;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
+
+  --shadow-foam:
+    0 0 0 1px rgb(58 20 48 / 0.06),
+    0 1px 2px -1px rgb(58 20 48 / 0.08),
+    0 10px 24px -12px rgb(255 0 127 / 0.28);
+  --shadow-foam-hover:
+    0 0 0 1px rgb(58 20 48 / 0.08),
+    0 2px 6px -2px rgb(58 20 48 / 0.1),
+    0 16px 32px -16px rgb(255 0 127 / 0.38);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: var(--color-blush);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    background-image: radial-gradient(circle at 1px 1px, #ffb7d5 1.05px, transparent 1.2px);
+    background-size: 18px 18px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  img {
+    outline: 1px solid rgb(58 20 48 / 0.08);
+    outline-offset: -1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
