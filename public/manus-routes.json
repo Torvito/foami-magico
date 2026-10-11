@@ -1,6 +1,7 @@
 {
   "routes": [
     { "path": "/", "title": "Inicio · Foami Mágico" },
+    { "path": "/admin", "title": "Administración · Foami Mágico" },
     { "path": "/catalogo", "title": "Catálogo · Foami Mágico" },
     { "path": "/producto/:slug", "title": "Producto · Foami Mágico" },
     { "path": "/cotizar", "title": "Cotizar · Foami Mágico" },
