@@ -212,9 +212,9 @@ export function getProduct(slug: string) {
   return PRODUCTS.find((p) => p.slug === slug);
 }
 
-export function productsByCategory(id?: string) {
-  if (!id) return PRODUCTS;
-  return PRODUCTS.filter((p) => p.category === id);
+export function productsByCategory(id?: string, products: Product[] = PRODUCTS) {
+  if (!id) return products;
+  return products.filter((p) => p.category === id);
 }
 
 export function featuredProducts() {

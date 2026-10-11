@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ProductCard } from "@/components/product-card";
+import { getPublicCatalog } from "@/lib/products-db";
 import { CATEGORIES, productsByCategory, type CategoryId } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
@@ -13,12 +14,14 @@ function parseSearch(s: Record<string, unknown>): CatalogSearch {
 
 export const Route = createFileRoute("/catalogo")({
   validateSearch: parseSearch,
+  loader: () => getPublicCatalog(),
   component: Catalogo,
 });
 
 function Catalogo() {
   const { cat } = Route.useSearch();
-  const items = productsByCategory(cat);
+  const products = Route.useLoaderData();
+  const items = productsByCategory(cat, products);
   const current = CATEGORIES.find((c) => c.id === cat);
 
   return (

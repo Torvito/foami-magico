@@ -8,17 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/lib/cart";
-import { getCategory, getProduct } from "@/lib/products";
+import { getCategory } from "@/lib/products";
+import { getPublicProduct } from "@/lib/products-db";
 import { DETAIL_LEVELS, type DetailId } from "@/lib/quote";
 import { cn, formatNio } from "@/lib/utils";
 
 export const Route = createFileRoute("/producto/$slug")({
+  loader: ({ params }) => getPublicProduct({ data: { slug: params.slug } }),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { slug } = Route.useParams();
-  const product = getProduct(slug);
+  const product = Route.useLoaderData();
 
   if (!product) {
     return (
