@@ -20,6 +20,9 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#FF007F" },
     ],
     links: [
+      { rel: "shortcut icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/icons/foami-magico-32.png" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/icons/foami-magico-16.png" },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icons/foami-magico-192.png" },
       { rel: "stylesheet", href: appCss },
