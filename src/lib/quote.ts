@@ -1,5 +1,5 @@
 import { formatDateEs, formatNio, formatUsd } from "@/lib/utils";
-import { getCategory, getProduct, type Product } from "@/lib/products";
+import { PRODUCTS, getCategory, type Product } from "@/lib/products";
 import { SITE, WHATSAPP_BASE } from "@/lib/site";
 
 export const DETAIL_LEVELS = [
@@ -74,8 +74,8 @@ export function rushRateFor(days: number | null, leadDays: number) {
   return 0;
 }
 
-export function computeQuote(input: QuoteInput): QuoteBreakdown | null {
-  const product = input.productId ? getProduct(input.productId) : undefined;
+export function computeQuote(input: QuoteInput, products: Product[] = PRODUCTS): QuoteBreakdown | null {
+  const product = input.productId ? products.find((item) => item.slug === input.productId) : undefined;
   if (!product) return null;
   const level =
     DETAIL_LEVELS.find((item) => item.id === input.detail) ?? DETAIL_LEVELS[1];
@@ -163,7 +163,7 @@ export type CartTotals = {
   tooSoon: boolean;
 };
 
-export function computeCart(lines: CartLineDraft[], eventDate: string): CartTotals {
+export function computeCart(lines: CartLineDraft[], eventDate: string, products: Product[] = PRODUCTS): CartTotals {
   const items = lines.flatMap((line) => {
     const quote = computeQuote({
       productId: line.productId,
@@ -172,7 +172,7 @@ export function computeCart(lines: CartLineDraft[], eventDate: string): CartTota
       eventDate,
       customerName: "",
       notes: line.notes,
-    });
+    }, products);
     if (!quote) return [];
     return [{ ...quote, id: line.id, notes: line.notes }];
   });

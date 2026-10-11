@@ -7,28 +7,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/lib/cart";
-import { CATEGORIES, PRODUCTS, getProduct } from "@/lib/products";
+import { CATEGORIES, type Product } from "@/lib/products";
 import { DETAIL_LEVELS, computeQuote, type DetailId } from "@/lib/quote";
 import { cn, formatNio } from "@/lib/utils";
 
-export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
-  const initial = initialSlug && getProduct(initialSlug) ? initialSlug : null;
+export function QuoteForm({ initialSlug, products }: { initialSlug?: string; products: Product[] }) {
+  const findProduct = (slug: string) => products.find((item) => item.slug === slug);
+  const initial = initialSlug && findProduct(initialSlug) ? initialSlug : null;
   const [productId, setProductId] = useState<string | null>(initial);
   const [detail, setDetail] = useState<DetailId>("intermedio");
-  const [quantity, setQuantity] = useState(() => getProduct(initial ?? "")?.minQty ?? 1);
+  const [quantity, setQuantity] = useState(() => findProduct(initial ?? "")?.minQty ?? 1);
   const [notes, setNotes] = useState("");
   const eventDate = useCart((s) => s.eventDate);
   const addLine = useCart((s) => s.addLine);
+  const setCatalog = useCart((s) => s.setCatalog);
+
+  useEffect(() => setCatalog(products), [products, setCatalog]);
 
   useEffect(() => {
     if (!initialSlug) return;
-    const next = getProduct(initialSlug);
+    const next = products.find((item) => item.slug === initialSlug);
     if (!next) return;
     setProductId(next.slug);
     setQuantity((qty) => Math.max(next.minQty, qty));
-  }, [initialSlug]);
+  }, [initialSlug, products]);
 
-  const product = productId ? getProduct(productId) : undefined;
+  const product = productId ? findProduct(productId) : undefined;
   const quote = useMemo(
     () =>
       computeQuote({
@@ -38,12 +42,12 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
         eventDate,
         customerName: "",
         notes,
-      }),
-    [productId, detail, quantity, eventDate, notes],
+      }, products),
+    [productId, detail, quantity, eventDate, notes, products],
   );
 
   function selectProduct(slug: string) {
-    const next = getProduct(slug);
+    const next = findProduct(slug);
     setProductId(slug);
     if (next) setQuantity(next.minQty);
   }
@@ -58,7 +62,7 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
       toast.error("Elige un producto del catálogo para agregarlo.");
       return;
     }
-    addLine({ productId: product.slug, detail, quantity, notes });
+    addLine({ productId: product.slug, detail, quantity, notes, minQty: product.minQty });
     toast.success(`${product.name} agregado. Puedes sumar otra pieza.`);
     setNotes("");
   }
@@ -98,7 +102,7 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
           </div>
           <div className="mt-4 space-y-5">
             {CATEGORIES.map((cat) => {
-              const items = PRODUCTS.filter((item) => item.category === cat.id);
+              const items = products.filter((item) => item.category === cat.id);
               return (
                 <div key={cat.id}>
                   <h3 className="text-sm font-semibold text-muted">{cat.name}</h3>
@@ -213,7 +217,7 @@ export function QuoteForm({ initialSlug }: { initialSlug?: string }) {
       </div>
 
       <aside className="h-fit lg:sticky lg:top-24">
-        <CartPanel />
+        <CartPanel products={products} />
       </aside>
     </div>
     </div>

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { getProduct } from "@/lib/products";
+import { PRODUCTS, type Product } from "@/lib/products";
 import type { CartLineDraft, Currency, DetailId } from "@/lib/quote";
 
 export type NewCartLine = {
@@ -8,6 +8,7 @@ export type NewCartLine = {
   detail: DetailId;
   quantity: number;
   notes: string;
+  minQty?: number;
 };
 
 type CartState = {
@@ -15,6 +16,8 @@ type CartState = {
   customerName: string;
   eventDate: string;
   currency: Currency;
+  catalog: Product[];
+  setCatalog: (products: Product[]) => void;
   addLine: (line: NewCartLine) => void;
   updateQty: (id: string, quantity: number) => void;
   updateDetail: (id: string, detail: DetailId) => void;
@@ -30,8 +33,8 @@ function samePiece(a: { productId: string; detail: DetailId; notes: string }, b:
   return a.productId === b.productId && a.detail === b.detail && a.notes === b.notes.trim();
 }
 
-function clampQty(productId: string, quantity: number) {
-  const min = getProduct(productId)?.minQty ?? 1;
+function clampQty(productId: string, quantity: number, catalog: Product[], fallbackMinQty?: number) {
+  const min = catalog.find((product) => product.slug === productId)?.minQty ?? fallbackMinQty ?? 1;
   return Math.max(min, Math.round(quantity) || min);
 }
 
@@ -47,10 +50,12 @@ export const useCart = create<CartState>()(
       customerName: "",
       eventDate: "",
       currency: "NIO",
+      catalog: PRODUCTS,
+      setCatalog: (catalog) => set({ catalog }),
       addLine: (line) =>
         set((state) => {
           const notes = line.notes.trim();
-          const quantity = clampQty(line.productId, line.quantity);
+          const quantity = clampQty(line.productId, line.quantity, state.catalog, line.minQty);
           const existing = state.lines.find((item) => samePiece(item, { ...line, notes }));
           if (existing) {
             return {
@@ -69,7 +74,7 @@ export const useCart = create<CartState>()(
       updateQty: (id, quantity) =>
         set((state) => ({
           lines: state.lines.map((item) =>
-            item.id === id ? { ...item, quantity: clampQty(item.productId, quantity) } : item,
+            item.id === id ? { ...item, quantity: clampQty(item.productId, quantity, state.catalog) } : item,
           ),
         })),
       updateDetail: (id, detail) =>

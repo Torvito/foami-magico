@@ -1,22 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { QuoteForm } from "@/components/quote-form";
-import { getProduct } from "@/lib/products";
+import { getPublicCatalog } from "@/lib/products-db";
 
 type CotizarSearch = { producto?: string };
 
 function parseSearch(s: Record<string, unknown>): CotizarSearch {
   const producto = typeof s.producto === "string" ? s.producto : undefined;
-  if (producto && getProduct(producto)) return { producto };
+  if (producto) return { producto };
   return {};
 }
 
 export const Route = createFileRoute("/cotizar")({
   validateSearch: parseSearch,
+  loader: () => getPublicCatalog(),
   component: Cotizar,
 });
 
 function Cotizar() {
   const { producto } = Route.useSearch();
+  const products = Route.useLoaderData();
   return (
     <div>
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-fucsia">Cotizador</p>
@@ -26,7 +28,7 @@ function Cotizar() {
         El total, en córdobas o dólares, se confirma por WhatsApp antes de cortar.
       </p>
       <div className="mt-6">
-        <QuoteForm initialSlug={producto} />
+      <QuoteForm initialSlug={producto} products={products} />
       </div>
     </div>
   );

@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CartPanel } from "@/components/cart-panel";
+import { getPublicCatalog } from "@/lib/products-db";
 
 export const Route = createFileRoute("/carrito")({
+  loader: () => getPublicCatalog(),
   component: Carrito,
 });
 
 function Carrito() {
+  const products = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-xl">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-fucsia">Pedido</p>
@@ -14,7 +17,7 @@ function Carrito() {
         Revisa las piezas, cambia cantidades y manda todo junto al taller.
       </p>
       <div className="mt-6">
-        <CartPanel />
+        <CartPanel products={products} />
       </div>
     </div>
   );

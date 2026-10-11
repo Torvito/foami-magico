@@ -24,6 +24,7 @@ export function ProductCard({ product }: { product: Product }) {
       detail: "intermedio",
       quantity: product.minQty,
       notes: "",
+      minQty: product.minQty,
     });
     toast.success(`${product.name} en el carrito. El detalle se puede cambiar ahí.`);
   }

@@ -13,10 +13,11 @@ import { LogoMark } from "@/components/logo-mark";
 import { ProductCard } from "@/components/product-card";
 import { StitchCard } from "@/components/stitch-card";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES, featuredProducts } from "@/lib/products";
+import { CATEGORIES } from "@/lib/products";
+import { getPublicCatalog } from "@/lib/products-db";
 import { SITE } from "@/lib/site";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({ loader: () => getPublicCatalog(), component: Home });
 
 const STEPS = [
   {
@@ -55,7 +56,8 @@ const NOTES = [
 ];
 
 function Home() {
-  const featured = featuredProducts();
+  const products = Route.useLoaderData();
+  const featured = products.filter((product) => product.featured);
   const heroProducts = featured.slice(0, 3);
 
   return (

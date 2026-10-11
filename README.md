@@ -39,6 +39,7 @@ La rama `feature/admin-inventory-portal` incluye un portal protegido en `/admin`
 - Marcar disponibilidad y elegir entre inventario controlado, hecho a pedido o sin control.
 - Ajustar existencias con una razón obligatoria y registro de movimientos.
 - Consultar métricas de publicados, borradores, stock bajo, agotados y no disponibles.
+- Usar el mismo catálogo publicado en inicio, catálogo, detalle, cotizador, carrito y resumen de WhatsApp.
 
 El acceso es **fail-closed**. Un usuario debe estar en la tabla `admin_users` o en una allowlist de servidor:
 
@@ -48,6 +49,6 @@ FOAMI_ADMIN_EMAILS=admin@ejemplo.com
 FOAMI_ADMIN_USER_IDS=user-id-1,user-id-2
 ```
 
-Nunca se promueve automáticamente al primer usuario ni se aceptan roles enviados desde el navegador. En despliegue, aplica la migración `migrations/0002_admin_inventory.sql` usando el flujo normal de migraciones de la aplicación antes de habilitar el portal. La migración es idempotente y conserva los productos iniciales existentes.
+Nunca se promueve automáticamente al primer usuario ni se aceptan roles enviados desde el navegador. En despliegue, aplica la migración `migrations/0002_admin_inventory.sql` usando el flujo normal de migraciones de la aplicación antes de habilitar el portal. La migración es idempotente y su seed usa `on conflict do nothing` para conservar productos y precios existentes.
 
 La rama está deliberadamente separada de `main`; no debe fusionarse hasta revisar la configuración de administrador y la migración de la base de datos de producción.

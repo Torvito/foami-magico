@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, Copy, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { useCart } from "@/lib/cart";
+import type { Product } from "@/lib/products";
 import { DETAIL_LEVELS, buildCartWhatsAppMessage, computeCart, whatsappUrl, type DetailId } from "@/lib/quote";
 import { cn, formatNio, formatUsd, tomorrowIso } from "@/lib/utils";
 
-export function CartPanel() {
+export function CartPanel({ products }: { products: Product[] }) {
   const lines = useCart((s) => s.lines);
   const customerName = useCart((s) => s.customerName);
   const eventDate = useCart((s) => s.eventDate);
@@ -23,9 +24,11 @@ export function CartPanel() {
   const setEventDate = useCart((s) => s.setEventDate);
   const setCurrency = useCart((s) => s.setCurrency);
   const clear = useCart((s) => s.clear);
+  const setCatalog = useCart((s) => s.setCatalog);
   const [copied, setCopied] = useState(false);
 
-  const cart = useMemo(() => computeCart(lines, eventDate), [lines, eventDate]);
+  useEffect(() => setCatalog(products), [products, setCatalog]);
+  const cart = useMemo(() => computeCart(lines, eventDate, products), [lines, eventDate, products]);
   const totalLabel = cart.items.length
     ? currency === "NIO"
       ? formatNio(cart.totalNio)

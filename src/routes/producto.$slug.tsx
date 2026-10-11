@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Clock3, Package } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { StitchCard } from "@/components/stitch-card";
 import { Button } from "@/components/ui/button";
@@ -9,17 +9,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/lib/cart";
 import { getCategory } from "@/lib/products";
-import { getPublicProduct } from "@/lib/products-db";
+import { getPublicCatalog } from "@/lib/products-db";
 import { DETAIL_LEVELS, type DetailId } from "@/lib/quote";
 import { cn, formatNio } from "@/lib/utils";
 
 export const Route = createFileRoute("/producto/$slug")({
-  loader: ({ params }) => getPublicProduct({ data: { slug: params.slug } }),
+  loader: async ({ params }) => {
+    const products = await getPublicCatalog();
+    return { products, product: products.find((item) => item.slug === params.slug) ?? null };
+  },
   component: ProductPage,
 });
 
 function ProductPage() {
-  const product = Route.useLoaderData();
+  const { product, products } = Route.useLoaderData();
+  const setCatalog = useCart((s) => s.setCatalog);
+
+  useEffect(() => setCatalog(products), [products, setCatalog]);
 
   if (!product) {
     return (
@@ -102,7 +108,7 @@ function PieceOptions({ slug, minQty, name }: { slug: string; minQty: number; na
   const [notes, setNotes] = useState("");
 
   function add() {
-    addLine({ productId: slug, detail, quantity, notes });
+    addLine({ productId: slug, detail, quantity, notes, minQty });
     toast.success(`${name} agregado al carrito`);
     setNotes("");
   }

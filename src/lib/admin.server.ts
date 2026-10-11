@@ -181,6 +181,14 @@ export async function saveAdminProductServer(userId: string, userEmail: string |
   const { userId: actor } = await requireAdmin(userId, userEmail);
   const input = productInput.parse(data);
   const sql = await getSql();
+  const existing = await sql.query<{ stock_quantity: number; inventory_mode: InventoryMode }>(
+    "select stock_quantity, inventory_mode from products where slug = $1 and archived = false limit 1",
+    [input.slug],
+  );
+  const current = existing[0];
+  if (current && Number(current.stock_quantity) !== input.stockQuantity) {
+    throw new Error("Stock quantity changes must use the inventory adjustment flow");
+  }
   await sql.query(
     `insert into products (slug, name, category_id, tagline, description, includes, base_price_nio, lead_days, min_qty, image, featured, sku, publication_status, availability_status, inventory_mode, stock_quantity, minimum_stock, updated_at)
      values ($1,$2,$3,$4,$5,$6::jsonb,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,now())

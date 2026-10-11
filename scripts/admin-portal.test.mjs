@@ -21,6 +21,7 @@ test("inventory schema prevents negative quantities and records movement actors"
   assert.match(migration, /stock_quantity integer not null default 0 check \(stock_quantity >= 0\)/);
   assert.match(migration, /resulting_quantity integer not null check \(resulting_quantity >= 0\)/);
   assert.match(migration, /actor_user_id text not null/);
+  assert.match(migration, /on conflict \(slug\) do nothing/);
   assert.match(server, /for update/); // the server adjustment locks the product row
 });
 
@@ -30,5 +31,6 @@ test("admin authorization has no self-promotion fallback", async () => {
   assert.match(server, /FOAMI_ADMIN_USER_IDS/);
   assert.match(server, /role = 'ADMIN'/);
   assert.match(server, /AdminForbiddenError/);
+  assert.match(server, /Stock quantity changes must use the inventory adjustment flow/);
   assert.doesNotMatch(server, /first.*user|promot.*first/i);
 });
